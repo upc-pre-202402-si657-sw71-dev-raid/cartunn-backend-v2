@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -31,7 +34,23 @@ public class WebSecurityConfiguration {
     private final AuthenticationEntryPoint unauthorizedRequestHandler;
 
     /**
+     * This is the constructor of the class.
+     *
+     * @param userDetailsService       The user details service
+     * @param tokenService             The token service
+     * @param hashingService           The hashing service
+     * @param authenticationEntryPoint The authentication entry point
+     */
+    public WebSecurityConfiguration(@Qualifier("defaultUserDetailsService") UserDetailsService userDetailsService, BearerTokenService tokenService, BCryptHashingService hashingService, AuthenticationEntryPoint authenticationEntryPoint) {
+        this.userDetailsService = userDetailsService;
+        this.tokenService = tokenService;
+        this.hashingService = hashingService;
+        this.unauthorizedRequestHandler = authenticationEntryPoint;
+    }
+
+    /**
      * This method creates the Bearer Authorization Request Filter.
+     *
      * @return The Bearer Authorization Request Filter
      */
     @Bean
@@ -41,6 +60,7 @@ public class WebSecurityConfiguration {
 
     /**
      * This method creates the authentication manager.
+     *
      * @param authenticationConfiguration The authentication configuration
      * @return The authentication manager
      */
@@ -51,6 +71,7 @@ public class WebSecurityConfiguration {
 
     /**
      * This method creates the authentication provider.
+     *
      * @return The authentication provider
      */
     @Bean
@@ -63,6 +84,7 @@ public class WebSecurityConfiguration {
 
     /**
      * This method creates the password encoder.
+     *
      * @return The password encoder
      */
     @Bean
@@ -79,43 +101,30 @@ public class WebSecurityConfiguration {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.cors().configurationSource(request -> {
-        var cors = new CorsConfiguration();
-        cors.setAllowedOrigins(List.of(""));
-        cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        cors.setAllowedHeaders(List.of(""));
-        return cors;
-    });
-
-    http.csrf().disable()
-        .exceptionHandling()
-            .authenticationEntryPoint(unauthorizedRequestHandler)
-        .and()
-        .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/v1/authentication/", "/v3/api-docs/",
-                            "/swagger-ui.html", "/swagger-ui/",
-                            "/swagger-resources/", "/webjars/**").permitAll()
-            .anyRequest().authenticated())
-        .authenticationProvider(authenticationProvider())
-        .addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
-}
-
-    /**
-     * This is the constructor of the class.
-     * @param userDetailsService The user details service
-     * @param tokenService The token service
-     * @param hashingService The hashing service
-     * @param authenticationEntryPoint The authentication entry point
-     */
-    public WebSecurityConfiguration(@Qualifier("defaultUserDetailsService") UserDetailsService userDetailsService, BearerTokenService tokenService, BCryptHashingService hashingService, AuthenticationEntryPoint authenticationEntryPoint) {
-        this.userDetailsService = userDetailsService;
-        this.tokenService = tokenService;
-        this.hashingService = hashingService;
-        this.unauthorizedRequestHandler = authenticationEntryPoint;
+// CORS default configuration
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        http.cors(configurer -> configurer.configurationSource(sec -> {
+            corsConfiguration.setAllowedOrigins(List.of("*"));
+            corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+            corsConfiguration.setAllowedHeaders(List.of("*"));
+            return corsConfiguration;
+        }));
+        http.csrf(csrfConfigurer -> csrfConfigurer.disable())
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(unauthorizedRequestHandler))
+                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers(
+                                "/api/v1/authentication/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/swagger-resources/**",
+                                "/webjars/**")
+                        .permitAll()
+                        .anyRequest().authenticated());
+        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 }

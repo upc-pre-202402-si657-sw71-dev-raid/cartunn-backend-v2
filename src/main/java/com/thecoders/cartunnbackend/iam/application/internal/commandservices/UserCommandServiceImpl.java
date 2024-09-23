@@ -32,25 +32,36 @@ public class UserCommandServiceImpl implements UserCommandService {
     public Optional<User> handle(SignUpCommand command) {
         if (userRepository.existsByUsername(command.username()))
             throw new RuntimeException("Username already exists");
+
         var roles = command.roles();
+
         if (roles.isEmpty()) {
             var role = roleRepository.findByName(Roles.ROLE_CLIENT);
             roles.add(role.get());
         }
+
         roles = command.roles().stream().map(role -> roleRepository.findByName(role.getName()).orElseThrow(() -> new RuntimeException("Role not found"))).toList();
+
         var user = new User(command.username(), hashingService.encode(command.password()), roles);
+
         userRepository.save(user);
+
         return userRepository.findByUsername(command.username());
     }
 
     @Override
     public Optional<ImmutablePair<User, String>> handle(SignInCommand command) {
         var user = userRepository.findByUsername(command.username());
+
         if (user.isEmpty()) throw new RuntimeException("User not found");
+
         if (!hashingService.matches(command.password(), user.get().getPassword()))
             throw new RuntimeException("Invalid password");
+
         var currentUser = user.get();
+
         var token = tokenService.generateToken(currentUser.getUsername());
+
         return Optional.of(ImmutablePair.of(currentUser, token));
     }
 }

@@ -2,12 +2,18 @@ package com.thecoders.cartunnbackend.iam.domain.model.entities;
 
 import com.thecoders.cartunnbackend.iam.domain.model.valueobjects.Roles;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.With;
 
 import java.util.List;
 
 @Getter
 @Entity
+@Data
+@AllArgsConstructor
+@With
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +30,6 @@ public class Role {
         this.name = name;
     }
 
-    public String getStringName() {
-        return name.name();
-    }
-
     public static Role getDefaultRole() {
         return new Role(Roles.ROLE_CLIENT);
     }
@@ -37,7 +39,14 @@ public class Role {
     }
 
     public static List<Role> validateRoleSet(List<Role> roles) {
-        if (roles == null || roles.isEmpty()) return List.of(getDefaultRole());
+        if (roles == null || roles.isEmpty()) {
+            return List.of(getDefaultRole());
+        }
+
         return roles;
+    }
+
+    public String getStringName() {
+        return name.name();
     }
 }

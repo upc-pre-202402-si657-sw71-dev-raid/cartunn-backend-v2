@@ -18,17 +18,17 @@ public class OpenApiConfiguration {
         var openApi = new OpenAPI();
         openApi
                 .info(new Info()
-                        .title("Cartunn backend API")
+                        .title("Cartunn Backend API")
                         .description("Cartunn backend application REST API documentation.")
                         .version("v1.0.0")
                         .license(new License().name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
                 .externalDocs(new ExternalDocumentation()
-                        .description("Cartunn backend Wiki Documentation")
+                        .description("Cartunn Backend Wiki Documentation")
                         .url("https://cartunn-backend.wiki.github.io/docs"));
 
         // Add Security Scheme
-        /*final String securitySchemeName = "bearerAuth";
+        final String securitySchemeName = "bearerAuth";
         openApi.addSecurityItem(
                         new SecurityRequirement()
                                 .addList(securitySchemeName))

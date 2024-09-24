@@ -15,30 +15,28 @@ import java.util.Set;
 public class User extends AuditableAbstractAggregateRoot<User> {
 
     @Getter
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private final Set<Role> roles;
+    @Getter
     @NotBlank
     @Size(max = 50)
     @Column(unique = true)
     private String username;
-
     @Getter
     @NotBlank
     @Size(max = 120)
     private String password;
-
-    @Getter
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
 
     public User() {
         this.roles = new HashSet<>();
     }
 
     public User(String username, String password) {
-        this();
         this.username = username;
         this.password = password;
+        this.roles = new HashSet<>();
     }
 
     public User(String username, String password, List<Role> roles) {

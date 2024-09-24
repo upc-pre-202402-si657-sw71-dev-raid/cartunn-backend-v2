@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 
 @Service
 public class ApplicationReadyEventHandler {
-    private final RoleCommandService roleCommandService;
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationReadyEventHandler.class);
+    private final RoleCommandService roleCommandService;
 
     public ApplicationReadyEventHandler(RoleCommandService roleCommandService) {
         this.roleCommandService = roleCommandService;

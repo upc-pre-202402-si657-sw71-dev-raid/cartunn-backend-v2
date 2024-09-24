@@ -1,7 +1,7 @@
 package com.thecoders.cartunnbackend.iam.infrastructure.authorization.sfs.model;
 
-import com.thecoders.cartunnbackend.iam.domain.model.aggregates.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.thecoders.cartunnbackend.iam.domain.model.aggregates.User;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Getter
 @EqualsAndHashCode
@@ -41,7 +42,7 @@ public class UserDetailsImpl implements UserDetails {
         var authorities = user.getRoles().stream()
                 .map(role -> role.getName().name())
                 .map(SimpleGrantedAuthority::new)
-                .toList();
+                .collect(Collectors.toList());
         return new UserDetailsImpl(user.getUsername(), user.getPassword(), authorities);
     }
 

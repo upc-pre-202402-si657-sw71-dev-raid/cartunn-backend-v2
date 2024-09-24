@@ -7,8 +7,11 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 // http://localhost:8080/swagger-ui/index.html
 
 @Configuration
@@ -26,6 +29,11 @@ public class OpenApiConfiguration {
                 .externalDocs(new ExternalDocumentation()
                         .description("Cartunn Backend Wiki Documentation")
                         .url("https://cartunn-backend.wiki.github.io/docs"));
+        // Servers
+        openApi.servers(List.of(
+                new Server().url("http://localhost:8080").description("Local Server"),
+                new Server().url("https://cartunn-service-railway.up.railway.app").description("Production Server")
+        ));
 
         // Add Security Scheme
         final String securitySchemeName = "bearerAuth";

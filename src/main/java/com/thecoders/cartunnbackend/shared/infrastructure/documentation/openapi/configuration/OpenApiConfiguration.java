@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfiguration {
     @Bean
-    public OpenAPI learningPlatformOpenApi() {
+    public OpenAPI cartunnOpenApi() {
         var openApi = new OpenAPI();
         openApi
                 .info(new Info()

@@ -24,8 +24,8 @@ public class ProductRefundCommandServiceImpl implements ProductRefundCommandServ
         }
         var productRefund = new ProductRefund(command);
         try {
-            productRefundRepository.save(productRefund);
-            return productRefund.getId();
+            var productRefunded = productRefundRepository.save(productRefund);
+            return productRefunded.getId();
         } catch (Exception e) {
             throw new IllegalArgumentException("Error while saving product refund: " + e.getMessage());
         }

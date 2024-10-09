@@ -1,5 +1,6 @@
 package com.thecoders.cartunnbackend.iam.interfaces.rest;
 
+import com.thecoders.cartunnbackend.iam.domain.model.commands.DeleteUserCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.queries.GetAllUsersQuery;
 import com.thecoders.cartunnbackend.iam.domain.model.queries.GetUserByIdQuery;
 import com.thecoders.cartunnbackend.iam.domain.services.UserCommandService;
@@ -53,5 +54,14 @@ public class UsersController {
 
         var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(updatedUser.get());
         return ResponseEntity.ok(userResource);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        var deleteUserCommand = new DeleteUserCommand(userId);
+
+        userCommandService.handle(deleteUserCommand);
+
+        return ResponseEntity.ok("User deleted successfully");
     }
 }

@@ -1,6 +1,7 @@
 package com.thecoders.cartunnbackend.iam.domain.services;
 
 import com.thecoders.cartunnbackend.iam.domain.model.aggregates.User;
+import com.thecoders.cartunnbackend.iam.domain.model.commands.DeleteUserCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.commands.SignInCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.commands.SignUpCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.commands.UpdateUserCommand;
@@ -14,4 +15,6 @@ public interface UserCommandService {
     Optional<User> handle(SignUpCommand command);
 
     Optional<User> handle(UpdateUserCommand command);
+
+    void handle(DeleteUserCommand command);
 }

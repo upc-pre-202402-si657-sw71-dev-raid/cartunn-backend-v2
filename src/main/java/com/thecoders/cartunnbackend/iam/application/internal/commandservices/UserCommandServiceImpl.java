@@ -3,6 +3,7 @@ package com.thecoders.cartunnbackend.iam.application.internal.commandservices;
 import com.thecoders.cartunnbackend.iam.application.internal.outboundservices.hashing.HashingService;
 import com.thecoders.cartunnbackend.iam.application.internal.outboundservices.tokens.TokenService;
 import com.thecoders.cartunnbackend.iam.domain.model.aggregates.User;
+import com.thecoders.cartunnbackend.iam.domain.model.commands.DeleteUserCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.commands.SignInCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.commands.SignUpCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.commands.UpdateUserCommand;
@@ -74,6 +75,20 @@ public class UserCommandServiceImpl implements UserCommandService {
         } catch (Exception e) {
             throw new RuntimeException("Error while updating user: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void handle(DeleteUserCommand command) {
+        var user = userRepository.findById(command.id());
+
+        if (user.isEmpty()) throw new RuntimeException("User not found");
+
+        try {
+            userRepository.deleteById(user.get().getId());
+        } catch (Exception e) {
+            throw new RuntimeException("Error while deleting user: " + e.getMessage());
+        }
+
     }
 
     @Override

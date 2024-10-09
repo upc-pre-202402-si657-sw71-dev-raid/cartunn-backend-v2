@@ -54,4 +54,12 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.roles.addAll(validatedRoles);
         return this;
     }
+
+    public User updateInformation(String username, String password, List<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.roles.clear();
+        addRoles(roles);
+        return this;
+    }
 }

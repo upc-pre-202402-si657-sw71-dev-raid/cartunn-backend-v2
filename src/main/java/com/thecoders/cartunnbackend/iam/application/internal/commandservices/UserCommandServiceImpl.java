@@ -5,6 +5,7 @@ import com.thecoders.cartunnbackend.iam.application.internal.outboundservices.to
 import com.thecoders.cartunnbackend.iam.domain.model.aggregates.User;
 import com.thecoders.cartunnbackend.iam.domain.model.commands.SignInCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.commands.SignUpCommand;
+import com.thecoders.cartunnbackend.iam.domain.model.commands.UpdateUserCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.valueobjects.Roles;
 import com.thecoders.cartunnbackend.iam.domain.services.UserCommandService;
 import com.thecoders.cartunnbackend.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
@@ -47,6 +48,32 @@ public class UserCommandServiceImpl implements UserCommandService {
         userRepository.save(user);
 
         return userRepository.findByUsername(command.username());
+    }
+
+    @Override
+    public Optional<User> handle(UpdateUserCommand command) {
+        // Verify if the user exists
+        var user = userRepository.findById(command.id());
+
+        if (user.isEmpty()) throw new RuntimeException("User not found");
+
+        var userToUpdate = user.get();
+
+        // Verify if roles are valid
+        var roles = command.roles().stream().map(role -> roleRepository.findByName(role.getName()).orElseThrow(() -> new RuntimeException("Role not found"))).toList();
+
+        // Verify if the username already exists
+        if (userRepository.findByUsername(command.username()).isPresent() &&
+                !userToUpdate.getUsername().equals(command.username()))
+            throw new RuntimeException("Username already exists");
+
+        try {
+            var updatedUser = userToUpdate.updateInformation(command.username(), hashingService.encode(command.password()), roles);
+            var savedUser = userRepository.save(updatedUser);
+            return Optional.of(savedUser);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while updating user: " + e.getMessage());
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.thecoders.cartunnbackend.productRefunds.application.internal.command
 
 import com.thecoders.cartunnbackend.productRefunds.domain.model.aggregates.ProductRefund;
 import com.thecoders.cartunnbackend.productRefunds.domain.model.commands.CreateProductRefundCommand;
+import com.thecoders.cartunnbackend.productRefunds.domain.model.commands.DeleteProductRefundCommand;
 import com.thecoders.cartunnbackend.productRefunds.domain.model.commands.UpdateProductRefundCommand;
 import com.thecoders.cartunnbackend.productRefunds.domain.services.ProductRefundCommandService;
 import com.thecoders.cartunnbackend.productRefunds.infrastructure.jpa.persistence.ProductRefundRepository;
@@ -48,6 +49,20 @@ public class ProductRefundCommandServiceImpl implements ProductRefundCommandServ
             return Optional.of(updatedProfile);
         } catch (Exception e){
             throw new IllegalArgumentException("Error while updating product refund: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void handle(DeleteProductRefundCommand command) {
+        var result = productRefundRepository.findById(command.id());
+        if (result.isEmpty()){
+            throw new IllegalArgumentException("ProductRefund does not exist");
+        }
+        var productRefundToDelete = result.get();
+        try {
+            productRefundRepository.deleteById(productRefundToDelete.getId());
+        } catch (Exception e){
+            throw new IllegalArgumentException("Error while deleting product refund: " + e.getMessage());
         }
     }
 }

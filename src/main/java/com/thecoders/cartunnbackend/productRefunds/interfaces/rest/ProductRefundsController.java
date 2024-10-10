@@ -1,5 +1,6 @@
 package com.thecoders.cartunnbackend.productRefunds.interfaces.rest;
 
+import com.thecoders.cartunnbackend.productRefunds.domain.model.commands.DeleteProductRefundCommand;
 import com.thecoders.cartunnbackend.productRefunds.domain.model.queries.GetAllProductRefundsQuery;
 import com.thecoders.cartunnbackend.productRefunds.domain.model.queries.GetProductRefundByIdQuery;
 import com.thecoders.cartunnbackend.productRefunds.domain.services.ProductRefundCommandService;
@@ -27,24 +28,10 @@ public class ProductRefundsController {
     private final ProductRefundCommandService productRefundCommandService;
     private final ProductRefundQueryService productRefundQueryService;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     public ProductRefundsController(ProductRefundCommandService productRefundCommandService, ProductRefundQueryService productRefundQueryService) {
         this.productRefundCommandService = productRefundCommandService;
         this.productRefundQueryService = productRefundQueryService;
     }
-
 
     @PostMapping
     public ResponseEntity<ProductRefundResource> createProductRefund(@RequestBody CreateProductRefundResource createProductRefundResource) {
@@ -92,4 +79,10 @@ public class ProductRefundsController {
         return ResponseEntity.ok(productRefundResource);
     }
 
+    @DeleteMapping("/{productRefundId}")
+    public ResponseEntity<?> deleteProductRefund(@PathVariable Long productRefundId){
+        var deleteProductRefundCommand = new DeleteProductRefundCommand(productRefundId);
+        productRefundCommandService.handle(deleteProductRefundCommand);
+        return ResponseEntity.ok("Product refund deleted successfully");
+    }
 }

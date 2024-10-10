@@ -37,6 +37,22 @@ public class FavoritesController {
         var favoriteResources = favorites.stream().map(FavoriteResourceFromEntityAssembler::toResourceFromEntity).toList();
         return ResponseEntity.ok(favoriteResources);
     }
+
+    @GetMapping("/{favoriteId}")
+    public ResponseEntity<?> getFavoritebyId(@PathVariable Long favoriteId) {
+        var getFavoriteByProductIdQuery = new GetFavoriteByProductIdQuery(favoriteId);
+
+        var favorite = favoriteQueryService.handle(getFavoriteByProductIdQuery);
+
+        if (favorite.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var favoriteResource = FavoriteResourceFromEntityAssembler.toResourceFromEntity(favorite.get(0));
+
+        return ResponseEntity.ok(favoriteResource);
+    }
+
     @PostMapping
     public ResponseEntity<FavoriteResource> requestFavorite(@RequestBody RequestFavoriteResource resource) {
         var command = RequestFavoriteCommandFromResourceAssembler.toCommandFromResource(resource);

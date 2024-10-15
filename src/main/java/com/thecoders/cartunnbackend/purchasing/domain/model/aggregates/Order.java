@@ -73,4 +73,8 @@ public class Order {
         this.status = status;
         return this;
     }
+
+    public void setId(long l) {
+        this.id = l;
+    }
 }

@@ -2,6 +2,7 @@ package com.thecoders.cartunnbackend.shared.domain.model.aggregates;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -13,6 +14,7 @@ import java.util.Date;
 @MappedSuperclass
 public abstract class AuditableAbstractAggregateRoot<T extends AbstractAggregateRoot<T>> extends AbstractAggregateRoot<T> {
     @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +20,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private final Set<Role> roles;
     @Getter
     @NotBlank
@@ -52,6 +55,14 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     public User addRoles(List<Role> roles) {
         var validatedRoles = Role.validateRoleSet(roles);
         this.roles.addAll(validatedRoles);
+        return this;
+    }
+
+    public User updateInformation(String username, String password, List<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.roles.clear();
+        addRoles(roles);
         return this;
     }
 }

@@ -70,5 +70,4 @@ public class Payment  extends AuditableAbstractAggregateRoot<Payment> {
         this.methodPay = methodPay;
         return this;
     }
-
 }

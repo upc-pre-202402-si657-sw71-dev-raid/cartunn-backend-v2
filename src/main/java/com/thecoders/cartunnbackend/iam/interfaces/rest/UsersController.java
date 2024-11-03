@@ -3,6 +3,7 @@ package com.thecoders.cartunnbackend.iam.interfaces.rest;
 import com.thecoders.cartunnbackend.iam.domain.model.commands.DeleteUserCommand;
 import com.thecoders.cartunnbackend.iam.domain.model.queries.GetAllUsersQuery;
 import com.thecoders.cartunnbackend.iam.domain.model.queries.GetUserByIdQuery;
+import com.thecoders.cartunnbackend.iam.domain.model.queries.GetUserByUsernameQuery;
 import com.thecoders.cartunnbackend.iam.domain.services.UserCommandService;
 import com.thecoders.cartunnbackend.iam.domain.services.UserQueryService;
 import com.thecoders.cartunnbackend.iam.interfaces.rest.resources.UpdateUserResource;
@@ -45,7 +46,16 @@ public class UsersController {
         return ResponseEntity.ok(userResource);
     }
 
-    @PutMapping("/{userId}")
+    @GetMapping("get-user/{username}")
+    public ResponseEntity<UserResource> findUserIdByUsername(@PathVariable String username) {
+        var getUserByUsernameQuery = new GetUserByUsernameQuery(username);
+        var user = userQueryService.handle(getUserByUsernameQuery);
+        if (user.isEmpty()) return ResponseEntity.notFound().build();
+        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
+        return ResponseEntity.ok(userResource);
+    }
+
+    @PutMapping("update-user/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody UpdateUserResource updateUserResource) {
         var updateUserCommand = UpdateUserCommandFromResourceAssembler.toCommandFromResource(userId, updateUserResource);
         var updatedUser = userCommandService.handle(updateUserCommand);

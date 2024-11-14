@@ -1,6 +1,7 @@
 package com.thecoders.cartunnbackend.product.interfaces.rest;
 
 
+import com.thecoders.cartunnbackend.product.domain.model.commands.DeleteFavoriteByProductIdCommand;
 import com.thecoders.cartunnbackend.product.domain.model.commands.DeleteFavoriteCommand;
 import com.thecoders.cartunnbackend.product.domain.model.queries.GetAllFavoritesQuery;
 import com.thecoders.cartunnbackend.product.domain.model.queries.GetFavoriteByProductIdQuery;
@@ -72,5 +73,16 @@ public class FavoritesController {
         return ResponseEntity.ok("ProductFavorite deleted successfully");
     }
 
+    @DeleteMapping("/product/{productId}")
+    public ResponseEntity<?> deleteFavoritesByProductId(@PathVariable Long productId) {
+        try {
+            favoriteCommandService.handle(new DeleteFavoriteByProductIdCommand(productId));
+            return ResponseEntity.ok("All favorites for the specified product have been deleted successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while deleting favorites: " + e.getMessage());
+        }
+    }
 }
 
